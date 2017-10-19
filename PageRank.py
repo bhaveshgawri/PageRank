@@ -16,16 +16,17 @@ class PageRanker:
 		edge_list = []
 		self.edges = defaultdict(list)
 
-		with open (self.edge_file, 'r') as ef:
-			edge_list = ef.readlines()
+		with open (self.edge_file, 'r') as e_file:
+			edge_list = e_file.readlines()
 		
 		for edge in edge_list:
 			from_, to_ = edge.split('\t')
 			from_, to_ = int(from_), int(to_[:-1])
 			self.edges[from_].append(to_)
 		
-		for edge in self.edges:
-			print(edge, self.edges[edge])
+		print("adjacency list on RAM now...")
+		# for edge in self.edges:
+		# 	print(edge, self.edges[edge])
 
 	def pagerank(self):
 		old_rank = np.fromiter(
@@ -46,9 +47,10 @@ class PageRanker:
 			diff = sum(abs(self.rank - old_rank))
 			old_rank = self.rank
 			iterations += 1
-			print(self.rank)
+			# print("completed iteration "+str(iterations))
+			# print(self.rank)
 
 if __name__ == '__main__':
-	p = PageRanker(9, './data/test')
+	p = PageRanker(9, './data/test', max_iterations=10)
 	p.get_connections()
 	p.pagerank()
