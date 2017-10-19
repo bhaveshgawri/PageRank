@@ -1,8 +1,11 @@
 import math
+import heapq
+import random
 import numpy as np
 from collections import defaultdict
+from scipy.sparse import csr_matrix as SparseMatrix
 
-class PageRanker:
+class Ranker:
 	def __init__(self, node_num, edge_file, beta = 0.85, epsilon = 1e-6, max_iterations = 100):
 		self.beta = beta
 		self.edges = None
@@ -11,6 +14,8 @@ class PageRanker:
 		self.node_num = node_num
 		self.MAX_ITERATIONS = max_iterations
 		self.rank = np.zeros(self.node_num)
+		self.trusted_pages = []
+		self.trusted_set_size = 0
 
 	def get_connections(self):
 		edge_list = []
@@ -49,8 +54,78 @@ class PageRanker:
 			iterations += 1
 			# print("completed iteration "+str(iterations))
 			# print(self.rank)
+		print(self.rank)
+
+	def trustrank(self):
+		def get_trustedPages(break_point = 100):
+			# set number of trusted pages
+			if self.node_num < break_point:
+				ratio = 0.1
+			else:
+				ratio = 0.01
+			trusted_set_size = int(math.ceil(self.node_num * ratio))
+			
+			# set and return trusted pages
+			sorted_ranks = [(rank, node) for (node, rank) in enumerate(self.rank)]
+			heapq._heapify_max(sorted_ranks)
+			trusted_pages = [heapq._heappop_max(sorted_ranks)[1] for _ in range(trusted_set_size)]
+			
+			return (trusted_set_size, trusted_pages)
+
+		def get_topicSpecificGoogleMatrix(related_pages, related_set_size):
+			
+			teleport_matrix_row = []
+			teleport_matrix_col = []
+			teleport_matrix_data = []
+			for related_node in related_pages:
+				for node in range(self.node_num):
+					teleport_matrix_col.append(node)
+					teleport_matrix_row.append(related_node)
+					teleport_matrix_data.append((1-self.beta)/related_set_size)
+			
+			teleport_matrix = SparseMatrix((teleport_matrix_data, (teleport_matrix_row, teleport_matrix_col)), shape = (self.node_num, self.node_num))
+			# print(teleport_matrix)
+			# print(teleport_matrix.todense())
+
+			connection_matrix_row = []
+			connection_matrix_col = []
+			connection_matrix_data = []
+			for parent_node in range(self.node_num):
+				for child_node in self.edges[parent_node]:
+					connection_matrix_col.append(parent_node)
+					connection_matrix_row.append(child_node)
+					connection_matrix_data.append(self.beta / (len(self.edges[parent_node])))
+			
+			connection_matrix = SparseMatrix((connection_matrix_data, (connection_matrix_row, connection_matrix_col)), shape = (self.node_num, self.node_num))
+			# print(connection_matrix)
+			# print(connection_matrix.todense())
+
+			google_matrix = connection_matrix + teleport_matrix
+			return google_matrix
+
+		def get_trustRank(initial_rank, google_matrix):
+			iterations = 0
+			diff = math.inf
+			new_rank = SparseMatrix(np.zeros(self.node_num).transpose())
+			while(iterations < self.MAX_ITERATIONS and diff > self.epsilon):
+				new_rank = google_matrix * initial_rank
+				diff = SparseMatrix.sum(abs(new_rank - initial_rank))
+				initial_rank = new_rank
+				iterations += 1
+				# print(new_rank)
+			return new_rank
+
+		self.trusted_set_size, self.trusted_pages = get_trustedPages()
+		google_matrix = get_topicSpecificGoogleMatrix(self.trusted_pages, self.trusted_set_size)
+		initial_rank = [1/(self.node_num) for i in range(self.node_num)]
+		initial_rank = SparseMatrix(np.matrix(initial_rank).transpose())
+		rank_vector = get_trustRank(initial_rank, google_matrix)
+		print(rank_vector.todense())
+		# return rank_vector
+
 
 if __name__ == '__main__':
-	p = PageRanker(9, './data/test', max_iterations=10)
-	p.get_connections()
-	p.pagerank()
+	r = Ranker(9, './data/test', max_iterations=10)
+	r.get_connections()
+	r.pagerank()
+	r.trustrank()
