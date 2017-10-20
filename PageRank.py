@@ -5,8 +5,9 @@ import numpy as np
 from collections import defaultdict
 from scipy.sparse import csr_matrix as SparseMatrix
 
+
 class Ranker:
-	def __init__(self, node_num, edge_file, beta = 0.85, epsilon = 1e-6, max_iterations = 100):
+	def __init__(self, node_num, edge_file, beta=0.85, epsilon=1e-6, max_iterations=100):
 		self.beta = beta
 		self.edges = None
 		self.edge_file = edge_file
@@ -16,6 +17,7 @@ class Ranker:
 		self.rank = np.zeros(self.node_num)
 		self.trusted_pages = []
 		self.trusted_set_size = 0
+
 
 	def get_connections(self):
 		edge_list = []
@@ -33,12 +35,13 @@ class Ranker:
 		# for edge in self.edges:
 		# 	print(edge, self.edges[edge])
 
+
 	def pagerank(self):
 		old_rank = np.fromiter(
 			[1/self.node_num for _ in range(self.node_num)],
 			dtype='float'
 		)
-		
+
 		iterations = 0
 		diff = math.inf
 		while(iterations < self.MAX_ITERATIONS and diff > self.epsilon):
@@ -54,10 +57,11 @@ class Ranker:
 			iterations += 1
 			# print("completed iteration "+str(iterations))
 			# print(self.rank)
-		print(self.rank)
+		# print(self.rank, sum(self.rank))
+
 
 	def trustrank(self):
-		def get_trustedPages(break_point = 100):
+		def get_trustedPages(break_point=100):
 			# set number of trusted pages
 			if self.node_num < break_point:
 				ratio = 0.1
@@ -90,6 +94,7 @@ class Ranker:
 			connection_matrix_row = []
 			connection_matrix_col = []
 			connection_matrix_data = []
+
 			for parent_node in range(self.node_num):
 				for child_node in self.edges[parent_node]:
 					connection_matrix_col.append(parent_node)
@@ -103,24 +108,36 @@ class Ranker:
 			google_matrix = connection_matrix + teleport_matrix
 			return google_matrix
 
-		def get_trustRank(initial_rank, google_matrix):
+
+		def get_topicSpecificRank(initial_rank, google_matrix, teleport_set_size, teleport_set):
 			iterations = 0
 			diff = math.inf
-			new_rank = SparseMatrix(np.zeros(self.node_num).transpose())
+			rank_v = SparseMatrix(np.zeros(self.node_num).transpose())
 			while(iterations < self.MAX_ITERATIONS and diff > self.epsilon):
 				new_rank = google_matrix * initial_rank
-				diff = SparseMatrix.sum(abs(new_rank - initial_rank))
-				initial_rank = new_rank
+
+				leaked_rank = (1-SparseMatrix.sum(new_rank))/teleport_set_size
+				leaked_vector = SparseMatrix(np.array([leaked_rank if node in teleport_set else 0 for node in range(self.node_num)])).transpose()
+				
+				rank_v = new_rank + leaked_vector
+				diff = SparseMatrix.sum(abs(rank_v - initial_rank))
+				
+				initial_rank = rank_v
 				iterations += 1
-				# print(new_rank)
-			return new_rank
+				# print("completed iteration " + str(iterations))
+				# print(rank_v)
+
+			return rank_v
+
 
 		self.trusted_set_size, self.trusted_pages = get_trustedPages()
-		google_matrix = get_topicSpecificGoogleMatrix(self.trusted_pages, self.trusted_set_size)
+		google_matrix = get_topicSpecificGoogleMatrix(self.trusted_pages, 
+			self.trusted_set_size)
 		initial_rank = [1/(self.node_num) for i in range(self.node_num)]
 		initial_rank = SparseMatrix(np.matrix(initial_rank).transpose())
-		rank_vector = get_trustRank(initial_rank, google_matrix)
-		print(rank_vector.todense())
+		rank_vector = get_topicSpecificRank(initial_rank, google_matrix, 
+			self.trusted_set_size, self.trusted_pages)
+		print(rank_vector)
 		# return rank_vector
 
 
