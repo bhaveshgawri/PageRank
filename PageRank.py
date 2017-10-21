@@ -15,24 +15,30 @@ class PageRank:
 	Parameters
 	----------
 	beta : float
-		Probability with which teleport will occur
+		Probability with which teleports will occur.
+	
 	edges : collections.defaltdict(list)
-		Adjacency list containing information connections in web-graph
+		Adjacency list containing information of connections in web-graph.
+	
 	epsilon : float
-		A small value and total error in ranks should be less than epsilon
+		A small value and total error in ranks should be less than epsilon.
+	
 	max_iterations : int
-		Maximum number of times to apply power iteration
+		Maximum number of times to apply power iteration.
+	
 	node_num : int
 		Number of nodes in the web-graph
 
+	
 	order : {'beta', 'edges', 'epsilon', 'max_iterations', 'node_num'}
-		Order of parameters follows precisely this order.
+		Parameters follows precisely the above order.
 		None of the parameter is optional.
 
+	
 	Methods
 	-------
 	pageRank()
-		Calculate PageRank of all nodes in the web-graph
+		Calculate PageRank of all nodes in the web-graph.
 
 	"""
 	
@@ -45,18 +51,18 @@ class PageRank:
 
 
 	def pageRank(self):
-		"""PageRank of all nodes in the web-graph
+		"""PageRank of all nodes in the web-graph.
 
+	
 		Parameters
 		----------
 		None
 
+		
 		Returns
 		-------
-		final_rank_vector : numpy.ndarray
-			dtype : float
-			1-dimensional numpy array with size as number of nodes in web-graph
-			Contains rank of each node in the web-graph
+		final_rank_vector : numpy.ndarray [1-dimensional, dtype=float]
+			Contains PageRank of each node in the web-graph.
 
 		"""
 		final_rank_vector = np.zeros(self.node_num)
