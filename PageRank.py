@@ -23,7 +23,8 @@ class PageRank:
 			new_rank_vector = np.zeros(self.node_num)
 			for parent in self.edges:
 				for child in self.edges[parent]:
-					new_rank_vector[child] += initial_rank_vector[parent] /  len(self.edges[parent])
+					new_rank_vector[child] += (initial_rank_vector[parent] /
+					len(self.edges[parent]))
 
 			leaked_rank = (1-sum(new_rank_vector))/self.node_num
 			final_rank_vector = new_rank_vector + leaked_rank

@@ -5,7 +5,8 @@ from scipy.sparse import csr_matrix as SparseMatrix
 
 
 class TrustRank:
-	def __init__(self, beta, edges, epsilon, max_iterations, node_num, PageRank_vector):
+	def __init__(self, beta, edges, epsilon, max_iterations, node_num,
+		PageRank_vector):
 		self.beta = beta
 		self.edges = edges
 		self.epsilon = epsilon
@@ -38,16 +39,19 @@ class TrustRank:
 
 		final_rank_vector = np.zeros(self.node_num)
 		initial_rank_vector = np.fromiter(
-			[1/teleport_set_size if node in teleport_set else 0 for node in range(self.node_num)], dtype='float')
+			[1/teleport_set_size if node in teleport_set else 0 for node in
+				range(self.node_num)], dtype='float')
 		
 		while(iterations < self.MAX_ITERATIONS and diff > self.epsilon):
 			new_rank_vector = np.zeros(self.node_num)
 			for parent in self.edges:
 				for child in self.edges[parent]:
-					new_rank_vector[child] += initial_rank_vector[parent] /  len(self.edges[parent])
+					new_rank_vector[child] += (initial_rank_vector[parent] /
+						len(self.edges[parent]))
 
 			leaked_rank = (1 - sum(new_rank_vector)) / teleport_set_size
-			leaked_rank_vector = np.array([leaked_rank if node in teleport_set else 0 for node in range(self.node_num)])
+			leaked_rank_vector = np.array([leaked_rank if node in teleport_set
+				else 0 for node in range(self.node_num)])
 			
 			final_rank_vector = new_rank_vector + leaked_rank_vector
 			diff = sum(abs(final_rank_vector - initial_rank_vector))

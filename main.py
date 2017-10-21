@@ -20,4 +20,4 @@ def run(node_num, edgeFile, beta=0.85, epsilon=1e-6, max_iterations=20):
 
 
 if __name__ == '__main__':
-	run(2394385, "./data/WikiTalk.data")
+	run(9, "./data/test")

@@ -14,7 +14,8 @@ class TopicSpecificRank:
 
 	def matrix_get_initailRankMatrix(self):
 		initial_rank_list = [1/(self.node_num) for i in range(self.node_num)]
-		initial_rank_vector = SparseMatrix(np.matrix(initial_rank_list).transpose())
+		initial_rank_vector = SparseMatrix(np.matrix(initial_rank_list).
+			transpose())
 		return initial_rank_vector
 
 	
@@ -32,7 +33,9 @@ class TopicSpecificRank:
 				teleport_matrix_data.append(
 					(1 - self.beta) / related_set_size)
 		
-		teleport_matrix = SparseMatrix((teleport_matrix_data, (teleport_matrix_row, teleport_matrix_col)), shape = (self.node_num, self.node_num))
+		teleport_matrix = SparseMatrix((teleport_matrix_data, (
+			teleport_matrix_row, teleport_matrix_col)), shape = (self.node_num,
+				self.node_num))
 
 		connection_matrix_row = []
 		connection_matrix_col = []
@@ -45,7 +48,9 @@ class TopicSpecificRank:
 				connection_matrix_data.append(
 					self.beta / (len(self.edges[parent_node])))
 		
-		connection_matrix = SparseMatrix((connection_matrix_data, (connection_matrix_row, connection_matrix_col)), shape = (self.node_num, self.node_num))
+		connection_matrix = SparseMatrix((connection_matrix_data, (
+			connection_matrix_row, connection_matrix_col)), shape = (self.
+			node_num, self.node_num))
 
 		google_matrix = connection_matrix + teleport_matrix
 		return google_matrix	
@@ -61,8 +66,11 @@ class TopicSpecificRank:
 		while(iterations < self.MAX_ITERATIONS and diff > self.epsilon):
 			new_rank_vector = google_matrix * initial_rank_vector
 
-			leaked_rank = (1-SparseMatrix.sum(new_rank_vector))/teleport_set_size
-			leaked_rank_vector = SparseMatrix(np.array([leaked_rank if node in teleport_set else 0 for node in range(self.node_num)])).transpose()
+			leaked_rank = (1-SparseMatrix.sum(new_rank_vector))/
+				teleport_set_size
+			leaked_rank_vector = SparseMatrix(np.array([leaked_rank if node in
+				teleport_set else 0 for node in range(self.node_num)])).
+				transpose()
 			
 			final_rank_vector = new_rank_vector + leaked_rank_vector
 			diff = SparseMatrix.sum(
@@ -82,16 +90,19 @@ class TopicSpecificRank:
 
 		final_rank_vector = np.zeros(self.node_num)
 		initial_rank_vector = np.fromiter(
-			[1/teleport_set_size if node in teleport_set else 0 for node in range(self.node_num)], dtype='float')
+			[1/teleport_set_size if node in teleport_set else 0 for node in
+				range(self.node_num)], dtype='float')
 		
 		while(iterations < self.MAX_ITERATIONS and diff > self.epsilon):
 			new_rank_vector = np.zeros(self.node_num)
 			for parent in self.edges:
 				for child in self.edges[parent]:
-					new_rank_vector[child] += initial_rank_vector[parent] /  len(self.edges[parent])
+					new_rank_vector[child] += initial_rank_vector[parent] /
+						len(self.edges[parent])
 
 			leaked_rank = (1 - sum(new_rank_vector)) / teleport_set_size
-			leaked_rank_vector = np.array([leaked_rank if node in teleport_set else 0 for node in range(self.node_num)])
+			leaked_rank_vector = np.array([leaked_rank if node in teleport_set 
+				else 0 for node in range(self.node_num)])
 			
 			final_rank_vector = new_rank_vector + leaked_rank_vector
 			diff = sum(abs(final_rank_vector - initial_rank_vector))
@@ -113,8 +124,10 @@ class TopicSpecificRank:
 			
 			## approach 2: RAM eater :: uses SparseMatrices to calc. rank
 			# initialRank_vector = self.matrix_get_initailRankMatrix()
-			# google_matrix = self.matrix_get_topicSpecificGoogleMatrix(trusted_pages)
-			# topicSpecificRank_vector = self.matrix_get_topicSpecificRank(topic, initialRank_vector, google_matrix)
+			# google_matrix = self.matrix_get_topicSpecificGoogleMatrix(
+			# trusted_pages)
+			# topicSpecificRank_vector = self.matrix_get_topicSpecificRank(
+			# topic, initialRank_vector, google_matrix)
 		
 			list_of_rank_vectors.append((topic, topicSpecificRank_vector))
 			# can append topic number instead of topic(list)^^
