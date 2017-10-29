@@ -14,7 +14,8 @@ class getGraph:
 	Methods
 	-------
 	get_connections()
-		Reads the edges from the edge_file and save it in adjacency list on RAM.
+		Reads the edges from the edge_file and save it in adjacency list on 
+		RAM.
 
 	"""
 	def __init__(self, edge_file):

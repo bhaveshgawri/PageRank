@@ -170,7 +170,8 @@ class TopicSpecificRank:
 
 	def matrix_get_topicSpecificRank(self, teleport_set, initial_rank_vector, 
 		google_matrix):
-		"""Calculates TopicSpecificRank of each node taking some related_pages as `teleport_set`.
+		"""Calculates TopicSpecificRank of each node taking some related_pages 
+		as `teleport_set`.
 
 		This method works by applying power iteration until convergence
 		or till iterations reach `MAX_ITERATIONS`, whichever happens first.
@@ -288,7 +289,8 @@ class TopicSpecificRank:
 		
 		Returns
 		-------
-		[Assumption: list_get_topicSpecificRank is used instead of matrix_get_topicSpecificRank]
+		[Assumption: list_get_topicSpecificRank is used instead of 
+		matrix_get_topicSpecificRank]
 
 		dict_of_rank_vectors : dict of int and numpy.ndarray 
 			[1-dimensional, dtype=float]
