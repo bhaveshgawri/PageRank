@@ -1,6 +1,6 @@
 import math
 import numpy as np
-
+from graphs import plotGraph
 
 class PageRank:
 	"""PageRank of pages visualized as a graph.
@@ -72,6 +72,8 @@ class PageRank:
 		iterations = 0
 		diff = math.inf
 		
+		pg = plotGraph(self.edges, interval=3000)
+
 		while(iterations < self.MAX_ITERATIONS and diff > self.epsilon):
 			new_rank_vector = np.zeros(self.node_num)
 			for parent in self.edges:
@@ -85,5 +87,9 @@ class PageRank:
 			initial_rank_vector = final_rank_vector
 			iterations += 1
 			print("PageRank iteration: " + str(iterations))
+			
+			pg.plot(9, final_rank_vector)
+			# print(final_rank_vector)
+			# print('\n')
 
 		return final_rank_vector

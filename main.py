@@ -51,4 +51,7 @@ def run(edge_file, node_num, beta=0.85, epsilon=1e-6, max_iterations=20):
 if __name__ == '__main__':
 	location_of_the_edge_file = "./data/test"
 	number_of_nodes_in_web_graph = 9
+
+	# location_of_the_edge_file = "./data/WikiTalk.data"
+	# number_of_nodes_in_web_graph = 2394385
 	run(location_of_the_edge_file, number_of_nodes_in_web_graph)

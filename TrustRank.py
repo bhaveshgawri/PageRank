@@ -1,6 +1,7 @@
 import math
 import heapq
 import numpy as np
+from graphs import plotGraph
 from scipy.sparse import csr_matrix as SparseMatrix
 
 
@@ -119,6 +120,8 @@ class TrustRank:
 		iterations = 0
 		teleport_set_size = len(teleport_set)
 
+		pg = plotGraph(self.edges, interval=3000)
+
 		final_rank_vector = np.zeros(self.node_num)
 		initial_rank_vector = np.fromiter(
 			[1/teleport_set_size if node in teleport_set else 0 for node in
@@ -141,6 +144,8 @@ class TrustRank:
 			
 			iterations += 1
 			print("TrustRank iteration: " + str(iterations))
+			print(final_rank_vector)
+			pg.plot(9, final_rank_vector)
 
 		return final_rank_vector
 
