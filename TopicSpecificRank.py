@@ -2,6 +2,8 @@ import math
 import heapq
 import numpy as np
 from scipy.sparse import csr_matrix as SparseMatrix
+
+
 class TopicSpecificRank:
 	"""Similar to PageRank but the teleport set is a subset(related topics)
 	of all nodes.
