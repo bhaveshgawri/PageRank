@@ -7,18 +7,20 @@
 * Implementation of Topic-Specific Rank Algorithm.
 * Visual Representation through a graph at each step as the algorithm proceeds.
 
-## Requirements - `scipy` and `numpy`:  
+## Requirements - `numpy`, `scipy` and `networkx` :  
 
 Using `apt`:
 ```
 $ sudo apt install python3-numpy
 $ sudo apt install python3-scipy
+$ sudo apt install python3-networkx
 ```
 
 Using `pip3`:
 ```
 $ sudo pip3 install numpy
 $ sudo pip3 install scipy
+$ sudo pip3 install networkx
 ```
 
 ## How to run?
